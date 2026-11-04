@@ -7,7 +7,8 @@ module riscv_pipeline(
     input  [31:0] ReadDataM,
     input  [31:0] DualInstrD0, DualInstrD1,
     output [31:0] MainRD1D, MainRD2D,
-    output [31:0] DualRD1D, DualRD2D
+    output [31:0] DualRD1D, DualRD2D,
+    output        FrontendStallD, FrontendFlushD
 );
 
     // Cables internos Control <-> Datapath
@@ -21,6 +22,9 @@ module riscv_pipeline(
     wire        RegWriteM, RegWriteW, MemReadE, PCSrcE;
     wire [1:0]  ForwardAE, ForwardBE;
     wire        StallF, StallD, FlushE, FlushD;
+
+    assign FrontendStallD = StallD;
+    assign FrontendFlushD = FlushD;
 
     // 1. Unidad de Control
     controller c(

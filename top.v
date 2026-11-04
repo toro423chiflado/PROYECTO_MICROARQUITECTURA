@@ -13,6 +13,7 @@ module top #(
   wire [31:0] PC, Instr, Instr1, ReadData;
   wire [31:0] InstrD0, InstrD1;
   wire ValidD0, ValidD1, IssueD1, DualIssueNow;
+  wire FrontendStallD, FrontendFlushD;
   wire [31:0] MainRD1D, MainRD2D, DualRD1D, DualRD2D;
   
   // Instanciamos el procesador Pipelined
@@ -30,7 +31,9 @@ module top #(
     .MainRD1D   (MainRD1D),
     .MainRD2D   (MainRD2D),
     .DualRD1D   (DualRD1D),
-    .DualRD2D   (DualRD2D)
+    .DualRD2D   (DualRD2D),
+    .FrontendStallD(FrontendStallD),
+    .FrontendFlushD(FrontendFlushD)
   ); 
 
   imem #(.PROGRAM(PROGRAM)) imem(
@@ -43,6 +46,8 @@ module top #(
   dual_issue_frontend frontend(
      .clk      (clk),
      .reset    (reset),
+     .StallD   (FrontendStallD),
+     .FlushD   (FrontendFlushD),
      .PCF      (PC),
      .InstrF0  (Instr),
      .InstrF1  (Instr1),

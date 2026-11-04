@@ -11,10 +11,9 @@ module regfile(input  clk,
     if (we3) rf[a3] <= wd3; 
   end
   
-  // read two ports combinationally (A1/RD1, A2/RD2)
-  // register 0 hardwired to 0
-  assign rd1 = (a1 != 0) ? rf[a1] : 0; 
-  assign rd2 = (a2 != 0) ? rf[a2] : 0; 
-  assign rd4 = (a4 != 0) ? rf[a4] : 0;
-  assign rd5 = (a5 != 0) ? rf[a5] : 0;
+  // Combinational reads bypass the concurrent write; x0 always reads as zero.
+  assign rd1 = (a1 == 0) ? 32'b0 : (we3 && a1 == a3) ? wd3 : rf[a1];
+  assign rd2 = (a2 == 0) ? 32'b0 : (we3 && a2 == a3) ? wd3 : rf[a2];
+  assign rd4 = (a4 == 0) ? 32'b0 : (we3 && a4 == a3) ? wd3 : rf[a4];
+  assign rd5 = (a5 == 0) ? 32'b0 : (we3 && a5 == a3) ? wd3 : rf[a5];
 endmodule
