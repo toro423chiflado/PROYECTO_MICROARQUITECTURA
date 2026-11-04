@@ -28,7 +28,7 @@ module testbench #(
         forward_count = 0;
         stall_count = 0;
         flush_count = 0;
-        #15; // Mantenemos el reset en alto un rato
+        repeat (2) @(negedge clk); // Liberar reset fuera del flanco activo
         reset = 0; // Soltamos el reset, el procesador arranca
         
         // Corremos por 400ns y detenemos

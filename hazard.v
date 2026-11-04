@@ -26,6 +26,12 @@ module hazard(
     // Extracción de los registros fuente en la etapa Decode
     wire [4:0] Rs1D = InstrD[19:15];
     wire [4:0] Rs2D = InstrD[24:20];
+    wire [6:0] opD = InstrD[6:0];
+    wire uses_rs1 = (opD == 7'b0000011) || (opD == 7'b0100011) ||
+                    (opD == 7'b0110011) || (opD == 7'b0010011) ||
+                    (opD == 7'b1100011) || (opD == 7'b1100111);
+    wire uses_rs2 = (opD == 7'b0100011) || (opD == 7'b0110011) ||
+                    (opD == 7'b1100011);
     
     wire lwStall; // Cable interno para detectar dependencia Load-Use
 
@@ -54,7 +60,8 @@ module hazard(
     // Se da un riesgo si la instrucción en EX es un Load (MemReadE=1)
     // y su destino (RdE) es necesario por la instrucción en Decode (Rs1D o Rs2D).
     assign lwStall = MemReadE & (RdE != 5'd0) &
-                     ((RdE == Rs1D) | (RdE == Rs2D));
+                     ((uses_rs1 & (RdE == Rs1D)) |
+                      (uses_rs2 & (RdE == Rs2D)));
 
     // Si hay un riesgo Load-Use, congelamos Fetch y Decode
     assign StallF = lwStall;
