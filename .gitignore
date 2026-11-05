@@ -1,0 +1,20 @@
+# Productos generados por Vivado
+.Xil/
+*.cache/
+*.hw/
+*.ip_user_files/
+*.sim/
+*.runs/
+*.gen/
+*.jou
+*.log
+*.str
+*.wdb
+*.vvp
+*.vcd
+
+# Ayudas y evidencia locales
+/evidencia_control/
+/LEEME_CONTROL_E1.md
+/probar_control.ps1
+/mapa_control.json

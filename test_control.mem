@@ -1,0 +1,64 @@
+ffe00093 // PC 0x00: addi x1, x0, -2
+00300113 // PC 0x04: addi x2, x0, 3
+ffe00193 // PC 0x08: addi x3, x0, -2
+00209663 // PC 0x0c: bne x1, x2, bne_taken
+06500f13 // PC 0x10: addi x30, x0, 101
+00102023 // PC 0x14: sw x1, 0(x0)
+00309663 // PC 0x18: bne x1, x3, bne_not_taken_done
+00b00213 // PC 0x1c: addi x4, x0, 11
+00c00293 // PC 0x20: addi x5, x0, 12
+0020c663 // PC 0x24: blt x1, x2, blt_taken
+06600f13 // PC 0x28: addi x30, x0, 102
+00102023 // PC 0x2c: sw x1, 0(x0)
+00114663 // PC 0x30: blt x2, x1, blt_not_taken_done
+01500313 // PC 0x34: addi x6, x0, 21
+01600393 // PC 0x38: addi x7, x0, 22
+0030c663 // PC 0x3c: blt x1, x3, blt_equal_done
+01700413 // PC 0x40: addi x8, x0, 23
+01800493 // PC 0x44: addi x9, x0, 24
+0030d663 // PC 0x48: bge x1, x3, bge_equal_taken
+06700f13 // PC 0x4c: addi x30, x0, 103
+00102023 // PC 0x50: sw x1, 0(x0)
+00115663 // PC 0x54: bge x2, x1, bge_greater_taken
+06800f13 // PC 0x58: addi x30, x0, 104
+00102023 // PC 0x5c: sw x1, 0(x0)
+0020d663 // PC 0x60: bge x1, x2, bge_not_taken_done
+01f00513 // PC 0x64: addi x10, x0, 31
+02000593 // PC 0x68: addi x11, x0, 32
+00c0066f // PC 0x6c: jal x12, jal_target
+06900f13 // PC 0x70: addi x30, x0, 105
+00102023 // PC 0x74: sw x1, 0(x0)
+00060693 // PC 0x78: addi x13, x12, 0
+08800713 // PC 0x7c: addi x14, x0, 136
+005707e7 // PC 0x80: jalr x15, 5(x14)
+06a00f13 // PC 0x84: addi x30, x0, 106
+00102023 // PC 0x88: sw x1, 0(x0)
+00078813 // PC 0x8c: addi x16, x15, 0
+00100893 // PC 0x90: addi x17, x0, 1
+01102223 // PC 0x94: sw x17, 4(x0)
+00000013 // PC 0x98: nop de relleno
+00000013 // PC 0x9c: nop de relleno
+00000013 // PC 0xa0: nop de relleno
+00000013 // PC 0xa4: nop de relleno
+00000013 // PC 0xa8: nop de relleno
+00000013 // PC 0xac: nop de relleno
+00000013 // PC 0xb0: nop de relleno
+00000013 // PC 0xb4: nop de relleno
+00000013 // PC 0xb8: nop de relleno
+00000013 // PC 0xbc: nop de relleno
+00000013 // PC 0xc0: nop de relleno
+00000013 // PC 0xc4: nop de relleno
+00000013 // PC 0xc8: nop de relleno
+00000013 // PC 0xcc: nop de relleno
+00000013 // PC 0xd0: nop de relleno
+00000013 // PC 0xd4: nop de relleno
+00000013 // PC 0xd8: nop de relleno
+00000013 // PC 0xdc: nop de relleno
+00000013 // PC 0xe0: nop de relleno
+00000013 // PC 0xe4: nop de relleno
+00000013 // PC 0xe8: nop de relleno
+00000013 // PC 0xec: nop de relleno
+00000013 // PC 0xf0: nop de relleno
+00000013 // PC 0xf4: nop de relleno
+00000013 // PC 0xf8: nop de relleno
+00000013 // PC 0xfc: nop de relleno
