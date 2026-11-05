@@ -44,6 +44,15 @@ programas principales y la batería adicional también se comprobaron con Icarus
 Son pruebas dirigidas; no constituyen verificación exhaustiva de todos los
 operandos, desplazamientos y combinaciones de hazards.
 
+## Alcance de la entrega :) 
+
+La segunda vía es preliminar: permite obtener y registrar dos instrucciones
+y observar resultados ALU, pero todavía no escribe resultados de forma
+independiente en el banco de registros. Las señales DualIssue e IssueD1
+indican elegibilidad preliminar, no instrucciones retiradas.
+
+La emisión simultánea completa se desarrollará en E2.
+
 ## Prueba adicional de control
 
 - `test_control.s`: programa Assembly de referencia.
@@ -65,13 +74,6 @@ El proyecto se conserva con `test_frontend_pipeline` como último top de simulac
 El banco general `testbench` mantiene por defecto el ejemplo RVC `test_e2p2.mem`;
 para las pruebas E1 anteriores deben seleccionarse los bancos indicados.
 
-## Alcance de la segunda vía
-
-La segunda vía no realiza commit independiente ni implementa emisión dual
-arquitectónica completa. DualIssue e IssueD1 indican elegibilidad preliminar,
-no instrucciones retiradas. El frontend auxiliar invalida los casos RVC que no
-puede decodificar. Estas limitaciones se detallan en
-`FRONTEND_DUAL_LIMITACIONES.md`.
 
 ## Archivos generados
 
