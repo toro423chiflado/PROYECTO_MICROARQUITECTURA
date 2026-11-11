@@ -11,8 +11,9 @@ module datapath(
     input          JumpD,
     input          ALUSrcD,
     input          RegWriteD,
-    input  [1:0]  ImmSrcD,
-    input  [2:0]  ALUControlD,
+    input  [2:0]  ImmSrcD,
+    input  [3:0]  ALUControlD,
+    input  [1:0]  ALUSrcAD,      // 00 rs1, 01 PC (auipc), 10 cero (lui)
     input  [4:0]  DualRs1D,
     input  [4:0]  DualRs2D,
 
@@ -82,10 +83,12 @@ reg          JumpE;
 reg          BranchE;
 reg          ALUSrcE; 
 reg  [1:0]  ResultSrcE;
-reg  [2:0]  ALUControlE;
+reg  [3:0]  ALUControlE;
+reg  [1:0]  ALUSrcAE;
 reg  [2:0]  Funct3E;  // Captura el tipo de Branch (beq, bne, blt, bge)
 reg  [6:0]  OpcodeE;  // Captura el tipo de Jump (jal, jalr)
 wire [31:0] SrcAE;
+wire [31:0] ALUSrcAValE;  // operando A real de la ALU (rs1, PC o 0)
 wire [31:0] SrcBE;
 wire [31:0] WriteDataE;
 wire [31:0] ALUResultE;
@@ -201,7 +204,8 @@ always @(posedge clk or posedge reset) begin
         BranchE      <= 1'b0;
         ALUSrcE      <= 1'b0;
         ResultSrcE   <= 2'b00;
-        ALUControlE  <= 3'b000;
+        ALUControlE  <= 4'b0000;
+        ALUSrcAE     <= 2'b00;
         RD1E         <= 32'd0;
         RD2E         <= 32'd0;
         PCD_E        <= 32'd0;
@@ -221,6 +225,7 @@ always @(posedge clk or posedge reset) begin
         ALUSrcE      <= ALUSrcD;
         ResultSrcE   <= ResultSrcD;
         ALUControlE  <= ALUControlD;
+        ALUSrcAE     <= ALUSrcAD;
         RD1E         <= RD1D;
         RD2E         <= RD2D;
         PCD_E        <= PCD;
@@ -266,21 +271,27 @@ mux2 #(WIDTH) srcbmux (
     .y  (SrcBE)
 );
 
+// Operando A: rs1 adelantado, PC (auipc) o cero (lui)
+assign ALUSrcAValE = (ALUSrcAE == 2'b01) ? PCD_E :
+                     (ALUSrcAE == 2'b10) ? 32'd0 : SrcAE;
+
 alu alu (
-    .a          (SrcAE),
+    .a          (ALUSrcAValE),
     .b          (SrcBE),
     .alucontrol (ALUControlE),
     .result     (ALUResultE),
     .zero       (ZeroE)
 );
 
-// Unidad de Evaluación de Ramas (Soporta beq, bne, blt, bge)
+// Unidad de Evaluación de Ramas (beq, bne, blt, bge, bltu, bgeu)
 always @(*) begin
     case (Funct3E)
         3'b000:  TakeBranchE = ZeroE;                             // beq
         3'b001:  TakeBranchE = ~ZeroE;                            // bne
         3'b100:  TakeBranchE = ($signed(SrcAE) < $signed(SrcBE));   // blt
         3'b101:  TakeBranchE = ($signed(SrcAE) >= $signed(SrcBE));  // bge
+        3'b110:  TakeBranchE = (SrcAE <  SrcBE);                     // bltu
+        3'b111:  TakeBranchE = (SrcAE >= SrcBE);                     // bgeu
         default: TakeBranchE = 1'b0;
     endcase
 end

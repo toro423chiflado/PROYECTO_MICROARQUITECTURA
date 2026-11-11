@@ -12,8 +12,9 @@ module riscv_pipeline(
 );
 
     // Cables internos Control <-> Datapath
-    wire [1:0] ResultSrcD, ImmSrcD;
-    wire [2:0] ALUControlD;
+    wire [1:0] ResultSrcD, ALUSrcAD;
+    wire [2:0] ImmSrcD;
+    wire [3:0] ALUControlD;
     wire MemWriteD, MemReadD, BranchD, JumpD, ALUSrcD, RegWriteD;
     
     // Cables internos Hazard <-> Datapath
@@ -39,7 +40,8 @@ module riscv_pipeline(
         .ALUSrcD    (ALUSrcD),
         .RegWriteD  (RegWriteD),
         .ImmSrcD    (ImmSrcD),
-        .ALUControlD(ALUControlD)
+        .ALUControlD(ALUControlD),
+        .ALUSrcAD   (ALUSrcAD)
     );
 
     // 2. Datapath Segmentado
@@ -56,6 +58,7 @@ module riscv_pipeline(
         .RegWriteD  (RegWriteD),
         .ImmSrcD    (ImmSrcD),
         .ALUControlD(ALUControlD),
+        .ALUSrcAD   (ALUSrcAD),
         .DualRs1D   (DualInstrD1[19:15]),
         .DualRs2D   (DualInstrD1[24:20]),
         // Hazard
