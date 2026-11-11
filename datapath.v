@@ -45,8 +45,19 @@ module datapath(
     output     [31:0] MainRD2D,
     output     [31:0] DualRD1D,
     output     [31:0] DualRD2D,
-    output            PCSrcE  // Redireccion en EX para limpiar el pipeline
+    output            PCSrcE, // Redireccion en EX para limpiar el pipeline
+
+    // MEDICION: instruccion valida que termina en WB y deteccion de fin de programa
+    output            RetireW, // instruccion valida en WB (no cuenta burbujas ni halt)
+    output            HaltW    // la instruccion halt (jal x0, 0) llego a WB
   );
+
+// Instruccion de parada usada como criterio de fin en todas las configuraciones
+localparam [31:0] HALT = 32'h0000006f; // jal x0, 0
+
+// Bit de validez por etapa: distingue instrucciones reales de burbujas/flush
+reg ValidD, ValidE, ValidM, ValidW;
+reg HaltE, HaltM, HaltW_reg;
 
 localparam WIDTH = 32;
 
@@ -154,10 +165,12 @@ always @(posedge clk or posedge reset) begin
         InstrD_reg <= 32'd0;
         PCD        <= 32'd0;
         PCPlus4D   <= 32'd0;
+        ValidD     <= 1'b0;
     end else if (!StallD) begin
         InstrD_reg <= InstrDecompF; // Instruccion expandida a 32 bits
         PCD        <= PCF;
         PCPlus4D   <= PCPlus4F;
+        ValidD     <= 1'b1;
     end
 end
 
@@ -216,6 +229,8 @@ always @(posedge clk or posedge reset) begin
         RdE_reg      <= 5'd0;
         Funct3E      <= 3'b000;
         OpcodeE      <= 7'b0000000;
+        ValidE       <= 1'b0;
+        HaltE        <= 1'b0;
     end else begin
         RegWriteE    <= RegWriteD;
         MemWriteE    <= MemWriteD;
@@ -236,6 +251,8 @@ always @(posedge clk or posedge reset) begin
         RdE_reg      <= InstrD[11:7];
         Funct3E      <= InstrD[14:12]; // Propaga funct3 para discriminar branches
         OpcodeE      <= InstrD[6:0];   // Propaga opcode para discriminar jalr
+        ValidE       <= ValidD;
+        HaltE        <= ValidD && (InstrD == HALT);
     end
 end
 
@@ -324,6 +341,8 @@ always @(posedge clk or posedge reset) begin
         WriteDataM_reg <= 32'd0;
         RdM_reg        <= 5'd0;
         PCPlus4M       <= 32'd0;
+        ValidM         <= 1'b0;
+        HaltM          <= 1'b0;
     end else begin
         RegWriteM_reg  <= RegWriteE;
         MemWriteM_reg  <= MemWriteE;
@@ -332,6 +351,8 @@ always @(posedge clk or posedge reset) begin
         WriteDataM_reg <= WriteDataE;
         RdM_reg        <= RdE_reg;
         PCPlus4M       <= PCPlus4E;
+        ValidM         <= ValidE;
+        HaltM          <= HaltE;
     end
 end
 
@@ -354,6 +375,8 @@ always @(posedge clk or posedge reset) begin
         ReadDataW     <= 32'd0;
         RdW_reg       <= 5'd0;
         PCPlus4W      <= 32'd0;
+        ValidW        <= 1'b0;
+        HaltW_reg     <= 1'b0;
     end else begin
         RegWriteW_reg <= RegWriteM_reg;
         ResultSrcW    <= ResultSrcM;
@@ -361,6 +384,8 @@ always @(posedge clk or posedge reset) begin
         ReadDataW     <= ReadDataM;
         RdW_reg       <= RdM_reg;
         PCPlus4W      <= PCPlus4M;
+        ValidW        <= ValidM;
+        HaltW_reg     <= HaltM;
     end
 end
 
@@ -378,5 +403,8 @@ mux3 #(WIDTH) resultmux (
     .s  (ResultSrcW),
     .y  (ResultW)
 );
+
+assign RetireW = ValidW & ~HaltW_reg;
+assign HaltW   = HaltW_reg;
 
 endmodule

@@ -1,5 +1,39 @@
 # Medicion comparativa E1 vs E2
 
+## Medicion generica (cualquier programa)
+
+`testbench_comparacion.v` ejecuta en paralelo la configuracion A (`top`,
+pipeline single-issue) y la B (`e2_top`, dual-issue) con el mismo programa, los
+mismos datos iniciales y el mismo reset. No necesita listas de PCs esperados,
+por lo que sirve para el programa propio y para el del profesor.
+
+- **Fin de programa:** la ultima instruccion debe ser `halt` = `jal x0, 0`
+  (`0000006f`).
+- **Ciclos:** desde el primer flanco de subida tras soltar el reset hasta el
+  ciclo en que `halt` llega a WB, incluido. Mismo criterio para A y B.
+- **Instrucciones retiradas:** instrucciones validas que llegan a WB. No se
+  cuentan burbujas, instrucciones anuladas por saltos ni el `halt`. Ambos
+  nucleos tienen las salidas `RetireW`/`RetireCnt` y `HaltW` para esto.
+- **Comprobaciones:** A y B deben terminar con los mismos 31 registros, la misma
+  memoria de datos y el mismo numero de instrucciones retiradas. Si se pasan
+  `EXP_REGS`/`EXP_MEM`, tambien se comparan con el resultado esperado.
+- **Metricas:** retiradas, ciclos, IPC, CPI, speedup A->B, stalls load-use,
+  saltos tomados, ciclos con 2 y con 1 instruccion emitida y uso de la doble
+  emision.
+
+```sh
+iverilog -g2012 -s testbench_comparacion -o /tmp/cmp \
+  -P testbench_comparacion.PROGRAM='"programa.mem"' \
+  -P testbench_comparacion.DATA='"programa.data.mem"' \
+  -P testbench_comparacion.EXP_REGS='""' -P testbench_comparacion.EXP_MEM='""' \
+  *.v && vvp /tmp/cmp
+```
+
+En Vivado: Simulation Top = `testbench_comparacion` y los mismos parametros en
+Generics/Parameters. `DATA`, `EXP_REGS` y `EXP_MEM` pueden quedar en `""`.
+
+## Medicion original del programa `benchmark_e1_e2`
+
 ## Resultado reproducido
 
 Ejecucion con Docker, imagen local `hdlc/iverilog:latest`, el 11-11-2026:

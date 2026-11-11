@@ -7,7 +7,9 @@ module top #(
     output [31:0] DualPCF1, DualInstrD0, DualInstrD1,
     output        DualValidD0, DualValidD1, DualIssueD1, DualIssue,
     output [31:0] DualALUResult0, DualALUResult1,
-    output        DualValidE0, DualValidE1
+    output        DualValidE0, DualValidE1,
+    output        RetireW,   // medicion: instruccion retirada este ciclo
+    output        HaltW      // medicion: halt (jal x0, 0) llego a WB
 );
   
   wire [31:0] PC, Instr, Instr1, ReadData;
@@ -33,7 +35,9 @@ module top #(
     .DualRD1D   (DualRD1D),
     .DualRD2D   (DualRD2D),
     .FrontendStallD(FrontendStallD),
-    .FrontendFlushD(FrontendFlushD)
+    .FrontendFlushD(FrontendFlushD),
+    .RetireW    (RetireW),
+    .HaltW      (HaltW)
   ); 
 
   imem #(.PROGRAM(PROGRAM)) imem(

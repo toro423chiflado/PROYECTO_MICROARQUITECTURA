@@ -8,7 +8,10 @@ module e2_pipeline(
     input [31:0] ReadDataM,
     output Issue0, Issue1,
     output RedirectE,
-    output [31:0] RedirectTargetE
+    output [31:0] RedirectTargetE,
+    // Medicion: instrucciones validas que terminan en WB y fin de programa
+    output [1:0] RetireCnt,   // 0, 1 o 2 instrucciones retiradas este ciclo
+    output HaltW              // la instruccion halt (jal x0, 0) llego a WB
 );
     reg [31:0] di[0:1], dp[0:1];
     reg dv[0:1];
@@ -179,6 +182,12 @@ module e2_pipeline(
     assign ALUResultM = memlane ? mr[1] : mr[0];
     assign WriteDataM = memlane ? mb[1] : mb[0];
     assign MemWriteM = !reset && ((mv[0] && mi[0][6:0]==7'h23) || (mv[1] && mi[1][6:0]==7'h23));
+
+    // Medicion: misma convencion que el pipeline single-issue (halt = jal x0, 0)
+    wire haltw0 = wv[0] && wi[0]==32'h0000006f;
+    wire haltw1 = wv[1] && wi[1]==32'h0000006f;
+    assign HaltW = haltw0 || haltw1;
+    assign RetireCnt = (wv[0] && !haltw0) + (wv[1] && !haltw1);
 
     always @(posedge clk) begin
         if (reset) begin

@@ -8,7 +8,9 @@ module riscv_pipeline(
     input  [31:0] DualInstrD0, DualInstrD1,
     output [31:0] MainRD1D, MainRD2D,
     output [31:0] DualRD1D, DualRD2D,
-    output        FrontendStallD, FrontendFlushD
+    output        FrontendStallD, FrontendFlushD,
+    output        RetireW,       // medicion: instruccion retirada este ciclo
+    output        HaltW          // medicion: halt llego a WB
 );
 
     // Cables internos Control <-> Datapath
@@ -89,7 +91,9 @@ module riscv_pipeline(
         .MainRD2D   (MainRD2D),
         .DualRD1D   (DualRD1D),
         .DualRD2D   (DualRD2D),
-        .PCSrcE     (PCSrcE)
+        .PCSrcE     (PCSrcE),
+        .RetireW    (RetireW),
+        .HaltW      (HaltW)
     );
 
     // 3. Unidad de Riesgos
