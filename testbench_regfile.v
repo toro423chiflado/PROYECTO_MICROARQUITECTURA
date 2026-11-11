@@ -6,7 +6,8 @@ module testbench_regfile;
   reg [31:0] wd3 = 0;
   wire [31:0] rd1, rd2, rd4, rd5;
 
-  regfile dut(clk, we3, a1, a2, a3, a4, a5, wd3, rd1, rd2, rd4, rd5);
+  // Configuracion E1: el segundo puerto de escritura (we6/a6/wd6) queda deshabilitado
+  regfile dut(clk, we3, a1, a2, a3, a4, a5, wd3, rd1, rd2, rd4, rd5, 1'b0, 5'd0, 32'd0);
   always #5 clk = ~clk;
 
   initial begin
