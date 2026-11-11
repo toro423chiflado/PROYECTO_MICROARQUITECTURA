@@ -1,0 +1,10 @@
+{
+  "instructions": 1268,
+  "taken_control": 214,
+  "loads": 286,
+  "stores": 158,
+  "branches": 315,
+  "halt_pc": 304,
+  "program": "benchmark_propio",
+  "static_instructions": 77
+}

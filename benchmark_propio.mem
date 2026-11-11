@@ -1,0 +1,77 @@
+00000437 // 0x000: la   s0, arr
+00040413 // 0x004:   (cont. la   s0, arr)
+000002b7 // 0x008: la   t0, n
+04028293 // 0x00c:   (cont. la   t0, n)
+0002a483 // 0x010: lw   s1, 0(t0)
+00000937 // 0x014: la   s2, vecb
+04490913 // 0x018:   (cont. la   s2, vecb)
+000009b7 // 0x01c: la   s3, vecc
+08498993 // 0x020:   (cont. la   s3, vecc)
+00000a37 // 0x024: la   s4, res
+0c4a0a13 // 0x028:   (cont. la   s4, res)
+00000513 // 0x02c: li   a0, 0
+00042583 // 0x030: lw   a1, 0(s0)
+00000613 // 0x034: li   a2, 0
+00000313 // 0x038: li   t1, 0
+00040393 // 0x03c: mv   t2, s0
+0003ae03 // 0x040: lw   t3, 0(t2)
+00130313 // 0x044: addi t1, t1, 1
+00438393 // 0x048: addi t2, t2, 4
+01c50533 // 0x04c: add  a0, a0, t3
+000e5463 // 0x050: bge  t3, zero, no_neg
+00160613 // 0x054: addi a2, a2, 1
+01c5d463 // 0x058: bge  a1, t3, no_max
+000e0593 // 0x05c: mv   a1, t3
+fe9340e3 // 0x060: blt  t1, s1, stats
+00aa2023 // 0x064: sw   a0, 0(s4)
+00ba2223 // 0x068: sw   a1, 4(s4)
+00ca2423 // 0x06c: sw   a2, 8(s4)
+00000693 // 0x070: li   a3, 0
+00000713 // 0x074: li   a4, 0
+00000313 // 0x078: li   t1, 0
+00040393 // 0x07c: mv   t2, s0
+00090e93 // 0x080: mv   t4, s2
+00098b13 // 0x084: mv   s6, s3
+0003ae03 // 0x088: lw   t3, 0(t2)
+000eaf03 // 0x08c: lw   t5, 0(t4)
+0043af83 // 0x090: lw   t6, 4(t2)
+004eaa83 // 0x094: lw   s5, 4(t4)
+01ee0e33 // 0x098: add  t3, t3, t5
+015f8fb3 // 0x09c: add  t6, t6, s5
+01cb2023 // 0x0a0: sw   t3, 0(s6)
+01fb2223 // 0x0a4: sw   t6, 4(s6)
+01c6c6b3 // 0x0a8: xor  a3, a3, t3
+01f70733 // 0x0ac: add  a4, a4, t6
+00838393 // 0x0b0: addi t2, t2, 8
+008e8e93 // 0x0b4: addi t4, t4, 8
+008b0b13 // 0x0b8: addi s6, s6, 8
+00230313 // 0x0bc: addi t1, t1, 2
+fc9344e3 // 0x0c0: blt  t1, s1, vadd
+00da2623 // 0x0c4: sw   a3, 12(s4)
+00ea2823 // 0x0c8: sw   a4, 16(s4)
+fff48b93 // 0x0cc: addi s7, s1, -1
+00000c93 // 0x0d0: li   s9, 0
+00000313 // 0x0d4: li   t1, 0
+00098393 // 0x0d8: mv   t2, s3
+00000c13 // 0x0dc: li   s8, 0
+001c8c93 // 0x0e0: addi s9, s9, 1
+0003ae03 // 0x0e4: lw   t3, 0(t2)
+0043af03 // 0x0e8: lw   t5, 4(t2)
+01cf5863 // 0x0ec: bge  t5, t3, noswap
+01e3a023 // 0x0f0: sw   t5, 0(t2)
+01c3a223 // 0x0f4: sw   t3, 4(t2)
+00100c13 // 0x0f8: li   s8, 1
+00438393 // 0x0fc: addi t2, t2, 4
+00130313 // 0x100: addi t1, t1, 1
+ff7340e3 // 0x104: blt  t1, s7, inner
+fffb8b93 // 0x108: addi s7, s7, -1
+000c0463 // 0x10c: beqz s8, sorted
+fd7042e3 // 0x110: blt  zero, s7, outer
+0009ae03 // 0x114: lw   t3, 0(s3)
+00249293 // 0x118: slli t0, s1, 2
+013282b3 // 0x11c: add  t0, t0, s3
+ffc2af03 // 0x120: lw   t5, -4(t0)
+01ca2a23 // 0x124: sw   t3, 20(s4)
+01ea2c23 // 0x128: sw   t5, 24(s4)
+019a2e23 // 0x12c: sw   s9, 28(s4)
+0000006f // 0x130: halt

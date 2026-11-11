@@ -32,6 +32,40 @@ iverilog -g2012 -s testbench_comparacion -o /tmp/cmp \
 En Vivado: Simulation Top = `testbench_comparacion` y los mismos parametros en
 Generics/Parameters. `DATA`, `EXP_REGS` y `EXP_MEM` pueden quedar en `""`.
 
+### Programa propio: `benchmark_propio.s`
+
+Tres partes: estadisticas de un arreglo (saltos que dependen de los datos),
+suma de vectores desenrollada x2 (mucho ILP, memoria mezclada con ALU) y bubble
+sort del resultado (loops anidados, load/store y load-use). Termina con `halt`.
+
+Los archivos `benchmark_propio.mem` (instrucciones), `.data.mem` (datos
+iniciales), `.exp_regs` y `.exp_mem` (resultado esperado) se generan con el
+ensamblador y modelo de referencia incluido:
+
+```sh
+python3 tools/rvasm.py benchmark_propio.s -o .
+```
+
+`testbench_comparacion` usa estos archivos por defecto:
+
+```sh
+iverilog -g2012 -s testbench_comparacion -o /tmp/cmp *.v && vvp /tmp/cmp
+```
+
+| Config | Retiradas | Ciclos | IPC | CPI |
+| --- | ---: | ---: | ---: | ---: |
+| A single-issue | 1268 | 1818 | 0.697 | 1.434 |
+| B dual-issue | 1268 | 1440 | 0.881 | 1.136 |
+
+Speedup A->B = 1.262. En B: 584 ciclos con 2 instrucciones emitidas y 300 con
+una (uso de la doble emision 66.1 %), 125 ciclos de stall y 215 saltos tomados
+(incluye el de `halt`), cada uno con 2 ciclos de penalizacion. A y B terminan
+con registros y memoria identicos, y coinciden con el modelo de referencia.
+
+Para el programa del profesor: agregar `halt` (`jal x0, 0`) al final si no lo
+tiene, generar su `.mem` y correr `testbench_comparacion` con `PROGRAM`
+apuntando a ese archivo (`DATA`, `EXP_REGS` y `EXP_MEM` pueden ser `""`).
+
 ## Medicion original del programa `benchmark_e1_e2`
 
 ## Resultado reproducido
