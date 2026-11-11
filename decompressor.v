@@ -53,7 +53,7 @@ module decompressor(
                 // Cuadrante 00
                 2'b00: begin
                     case (instr_in[15:13])
-                        3'b010: begin // c.lw -> lw rd', offset(rs1')
+                        3'b010: begin // c.lw
                             instr_out = {imm_cl, r_prime_rd, 3'b010, r_prime_rs2, 7'b0000011};
                         end
 
@@ -78,8 +78,7 @@ module decompressor(
 
                         3'b011: begin // c.lui
                             if (rd_ci != 5'd0 && rd_ci != 5'd2) begin
-                                // TRUCO: En lugar de emitir un LUI real que colapsaría el controller,
-                                // emitimos un ADDI con rs1=x0 para evitar las XXXX.
+                                // Emite ADDI con los 12 bits bajos, no un LUI equivalente.
                                 instr_out = {nzimm_lui[11:0], 5'b00000, 3'b000, rd_ci, 7'b0010011};
                             end
                         end

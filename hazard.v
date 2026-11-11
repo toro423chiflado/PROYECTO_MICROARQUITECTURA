@@ -35,7 +35,7 @@ module hazard(
     
     wire lwStall; // Cable interno para detectar dependencia Load-Use
 
-    // 1. LÓGICA DE FORWARDING (Adelantamiento hacia la etapa EX)
+    // Adelantamiento a EX: MEM tiene prioridad sobre WB.
     always @(*) begin
         // Forwarding para el operando A (Rs1E)
         if ((Rs1E == RdM) && RegWriteM && (Rs1E != 0)) begin
@@ -56,9 +56,7 @@ module hazard(
         end
     end
 
-    // 2. LÓGICA DE STALLING (Detención por riesgo Load-Use)
-    // Se da un riesgo si la instrucción en EX es un Load (MemReadE=1)
-    // y su destino (RdE) es necesario por la instrucción en Decode (Rs1D o Rs2D).
+    // Detiene una dependencia de carga solo si D usa el registro fuente.
     assign lwStall = MemReadE & (RdE != 5'd0) &
                      ((uses_rs1 & (RdE == Rs1D)) |
                       (uses_rs2 & (RdE == Rs2D)));

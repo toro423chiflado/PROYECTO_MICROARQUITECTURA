@@ -1,10 +1,4 @@
-//agregar los 4 registros del pipeline, el registro de IF/ID,
-//el registro de ID/EX, el registro de EX/MEM y el registro de MEM/WB.
-// Cada uno de estos registros debe almacenar la información relevante
-//para cada etapa del pipeline, como la instrucción, los operandos,
-//los resultados intermedios, etc. Además, se deben agregar las señales
-//de control necesarias para manejar el flujo de datos entre las etapas
-//del pipeline y evitar conflictos de datos (hazards).
+// Camino de datos segmentado con registros IF/ID, ID/EX, EX/MEM y MEM/WB.
 
 module datapath(
     input          clk,
@@ -50,7 +44,7 @@ module datapath(
     output     [31:0] MainRD2D,
     output     [31:0] DualRD1D,
     output     [31:0] DualRD2D,
-    output            PCSrcE  //Para que la Hazard Unit sepa cuándo limpiar el pipeline (Flush) debido a un salto tomado, necesita recibir la señal PCSrcE
+    output            PCSrcE  // Redireccion en EX para limpiar el pipeline
   );
 
 localparam WIDTH = 32;
@@ -128,20 +122,18 @@ always @(posedge clk or posedge reset) begin
         PCF <= PCNextF;
 end
 
-// 1. Alineación a 2 bytes (Half-word)
-// Si PCF[1] es 1, la instrucción comprimida está guardada en la mitad superior de los 32 bits [31:16]
+// Con PCF[1] activo se usa la mitad superior; no se concatena la palabra siguiente.
 assign InstrF_Aligned = (PCF[1]) ? {16'd0, InstrF[31:16]} : InstrF;
 
-// 2. Instanciación del módulo Descompresor
+// Expansion de instrucciones comprimidas.
 decompressor dec (
     .instr_in  (InstrF_Aligned),
     .instr_out (InstrDecompF)
 );
 
-// 3. Cálculo de incremento dinámico del PC
-// Si los bits [1:0] de la instrucción alineada NO son 2'b11, es una instrucción comprimida de 16 bits (+2 bytes)
+// Las instrucciones comprimidas avanzan 2 bytes; las demas, 4.
 assign PCIncF = (InstrF_Aligned[1:0] != 2'b11) ? 32'd2 : 32'd4;
-assign PCPlus4F = PCF + PCIncF; // Mantiene el nombre original para no alterar el resto del pipeline
+assign PCPlus4F = PCF + PCIncF; // Direccion siguiente, tambien usada como enlace
 
 mux2 #(WIDTH) pcmux (
     .d0 (PCPlus4F),
@@ -160,7 +152,7 @@ always @(posedge clk or posedge reset) begin
         PCD        <= 32'd0;
         PCPlus4D   <= 32'd0;
     end else if (!StallD) begin
-        InstrD_reg <= InstrDecompF; // <--- Guarda la instrucción ya traducida/expandida a 32 bits
+        InstrD_reg <= InstrDecompF; // Instruccion expandida a 32 bits
         PCD        <= PCF;
         PCPlus4D   <= PCPlus4F;
     end
@@ -302,7 +294,7 @@ wire [31:0] PCTargetRawE;
 adder pcaddbranch (
     .a (PCBaseE),
     .b (ImmExtE),
-    .y (PCTargetRawE)  // FIX: conectar al wire Raw, no al wire final
+    .y (PCTargetRawE)
 );
 
 // jalr/c.jr/c.jalr fuerzan el bit 0 del destino a 0, como indica RV32I.

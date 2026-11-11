@@ -84,7 +84,7 @@ module controller(
                 ALUSrcD     = 1'bx;  
                 MemWriteD   = 1'b0;
                 MemReadD    = 1'b0;
-                ResultSrcD  = 2'b10; // Guarda PC + 4 en el destino
+                ResultSrcD  = 2'b10; // Guarda la direccion de la siguiente instruccion
                 BranchD     = 1'b0;
                 JumpD       = 1'b1;
                 ALUOp       = 2'b00;
@@ -96,7 +96,7 @@ module controller(
                 ALUSrcD     = 1'b1;  
                 MemWriteD   = 1'b0;
                 MemReadD    = 1'b0;
-                ResultSrcD  = 2'b10; // Guarda PC + 4 en el destino
+                ResultSrcD  = 2'b10; // Guarda la direccion de la siguiente instruccion
                 BranchD     = 1'b0;
                 JumpD       = 1'b1;
                 ALUOp       = 2'b00; // ALU suma base + offset
