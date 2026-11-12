@@ -8,9 +8,12 @@ prueba_aleatoria.py - Verificacion con programas aleatorios (A vs B vs modelo de
 Cada programa mezcla operaciones ALU, lui/auipc, loads y stores, branches hacia
 adelante, jal, jalr y loops cortos, con pocos registros para forzar muchas
 dependencias. Se ensambla con tools/rvasm.py (que calcula el resultado esperado)
-y se simula con testbench_comparacion.v: A y B deben coincidir entre si y con el
-modelo de referencia en los 31 registros, las 256 palabras de memoria y el
-numero de instrucciones retiradas. Requiere Icarus Verilog.
+y se simula con testbench_comparacion.v, que hace dos comprobaciones:
+  1. A y B coinciden entre si en el numero de instrucciones retiradas, los 31
+     registros y las 256 palabras de memoria;
+  2. el estado final (31 registros y 256 palabras) coincide con el del modelo
+     de referencia.
+Requiere Icarus Verilog.
 """
 import glob, os, random, re, subprocess, sys, tempfile
 

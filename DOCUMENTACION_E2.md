@@ -64,7 +64,7 @@ Las pruebas E2 principal, de control y shifts, la de banco de registros y la de 
 
 Para generar y consultar las formas de onda opcionales de las pruebas E2 principal y de control, seguir `GUIA_WAVEFORMS_E2.md`.
 
-Los módulos y bancos E2 también están registrados en `PROYECTO2/PROYECTO2.xpr`. Para simularlos en Vivado hay que elegir el banco correspondiente como Simulation Top; el top predeterminado no se ha cambiado. Vivado no está disponible en este entorno y no se ha verificado la ejecución en Vivado.
+Los módulos y bancos E2 también están registrados en `PROYECTO2/PROYECTO2.xpr`, que abre con `testbench_e2` como Simulation Top. Para simular otro banco se elige como Simulation Top. En Vivado 2025.2 se ejecutaron `testbench_e2`, `testbench_e2_control`, `testbench_e2_directed` y `testbench_medicion_e2`; la tabla de `GUIA_EJECUCION_PROFE.md` indica cómo correr cada banco y cuáles se comprobaron solo con Icarus.
 
 ## Límites de verificación
 

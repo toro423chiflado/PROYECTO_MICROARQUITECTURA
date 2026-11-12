@@ -1,0 +1,178 @@
+Commit: 9277b79
+Fecha:  2026-11-12 23:32 UTC
+Icarus: Icarus Verilog version 12.0 (stable) ()
+Python: Python 3.13.18
+
+########## E1 (configuracion A)
+=== Programa 1: ALU (testbench_test1)
+PASS: test1_nodep verified 17 register writes
+testbench_test1.v:37: $finish called at 312000 (1ps)
+
+=== Programa 2: forwarding (testbench_base234)
+PASS test2: writes=3 stores=0 forwarding=2 stalls=0 flushes=0
+testbench_base234.v:51: $finish called at 312000 (1ps)
+
+=== Programa 3: load-use (testbench_base234)
+PASS test3: writes=3 stores=1 forwarding=2 stalls=1 flushes=0
+testbench_base234.v:51: $finish called at 312000 (1ps)
+
+=== Programa 4: flush (testbench_base234)
+PASS test4: writes=3 stores=0 forwarding=1 stalls=0 flushes=1
+testbench_base234.v:51: $finish called at 312000 (1ps)
+
+=== Bypass WB a Decode (testbench_wb_decode)
+PASS WB/Decode: simultaneous WB and Decode, x2=7
+testbench_wb_decode.v:24: $finish called at 212000 (1ps)
+
+=== Banco de registros (testbench_regfile)
+PASS: regfile WB/Decode bypass and x0
+testbench_regfile.v:47: $finish called at 31000 (1ps)
+
+=== Hazard Unit (test_hazard)
+PASS: load-use opcode and control checks
+test_hazard.v:56: $finish called at 516000 (1ps)
+
+=== Frontend aislado (test_frontend_sync)
+PASS frontend synchronization
+test_frontend_sync.v:50: $finish called at 96000 (1ps)
+
+=== Frontend integrado (test_frontend_pipeline)
+PASS integrated synchronization: stalls=1 flushes=1
+test_frontend_pipeline.v:51: $finish called at 412000 (1ps)
+
+=== Control (bne, blt, bge, jal, jalr) (testbench_control)
+WRITE x1=fffffffe
+WRITE x2=00000003
+CONTROL pc=0000000c opcode=63 taken=1 target=00000018
+WRITE x3=fffffffe
+CONTROL pc=00000018 opcode=63 taken=0 target=00000024
+WRITE x4=0000000b
+CONTROL pc=00000024 opcode=63 taken=1 target=00000030
+WRITE x5=0000000c
+CONTROL pc=00000030 opcode=63 taken=0 target=0000003c
+WRITE x6=00000015
+CONTROL pc=0000003c opcode=63 taken=0 target=00000048
+WRITE x7=00000016
+WRITE x8=00000017
+CONTROL pc=00000048 opcode=63 taken=1 target=00000054
+WRITE x9=00000018
+CONTROL pc=00000054 opcode=63 taken=1 target=00000060
+CONTROL pc=00000060 opcode=63 taken=0 target=0000006c
+WRITE x10=0000001f
+CONTROL pc=0000006c opcode=6f taken=1 target=00000078
+WRITE x11=00000020
+WRITE x12=00000070
+WRITE x13=00000070
+CONTROL pc=00000080 opcode=67 taken=1 target=0000008c
+WRITE x14=00000088
+WRITE x15=00000084
+WRITE x16=00000084
+WRITE x17=00000001
+PASS CONTROL: bne=2 blt=3 bge=3 jal=1 jalr=1 writes=17 redirects=6 stores=1
+PASS LINKS: jal x12=x13=00000070; jalr x15=x16=00000084; target=0000008c
+testbench_control.v:133: $finish called at 466000 (1ps)
+
+########## E2 (configuracion B)
+=== Emision y retiro (testbench_e2)
+PASS E2: 23 ordered retirements, memory and directed issue coverage
+testbench_e2.v:107: $finish called at 236000 (1ps)
+
+=== Control en ambas vias (testbench_e2_control)
+PASS case 0: lane=0 taken=1 cycles=11
+PASS case 1: lane=0 taken=0 cycles=11
+PASS case 2: lane=1 taken=1 cycles=11
+PASS case 3: lane=1 taken=0 cycles=11
+PASS case 4: lane=0 taken=1 cycles=11
+PASS case 5: lane=1 taken=1 cycles=11
+PASS case 6: lane=0 taken=1 cycles=12
+PASS E2 control: 7 directed integration scenarios
+testbench_e2_control.v:172: $finish called at 920000 (1ps)
+
+=== Desplazamientos (testbench_e2_shift)
+PASS E2 shifts: 14 register results and forwarding coverage
+testbench_e2_shift.v:90: $finish called at 150000 (1ps)
+
+=== Escenarios dirigidos (testbench_e2_directed)
+PASS branch case 0 funct=1 lane=0 taken=0
+PASS branch case 1 funct=1 lane=0 taken=1
+PASS branch case 2 funct=1 lane=1 taken=0
+PASS branch case 3 funct=1 lane=1 taken=1
+PASS branch case 4 funct=4 lane=0 taken=0
+PASS branch case 5 funct=4 lane=0 taken=1
+PASS branch case 6 funct=4 lane=1 taken=0
+PASS branch case 7 funct=4 lane=1 taken=1
+PASS branch case 8 funct=5 lane=0 taken=0
+PASS branch case 9 funct=5 lane=0 taken=1
+PASS branch case 10 funct=5 lane=1 taken=0
+PASS branch case 11 funct=5 lane=1 taken=1
+PASS branch case 12 funct=6 lane=0 taken=0
+PASS branch case 13 funct=6 lane=0 taken=1
+PASS branch case 14 funct=6 lane=1 taken=0
+PASS branch case 15 funct=6 lane=1 taken=1
+PASS branch case 16 funct=7 lane=0 taken=0
+PASS branch case 17 funct=7 lane=0 taken=1
+PASS branch case 18 funct=7 lane=1 taken=0
+PASS branch case 19 funct=7 lane=1 taken=1
+PASS hazards: RAW, load-use, memory conflict, WAW and forwarding
+PASS E2 directed: 21 scenarios
+testbench_e2_directed.v:153: $finish called at 3020000 (1ps)
+
+=== Banco de registros 4R/2W (testbench_regfile_dual)
+PASS: dual regfile writes, priority, x0, bypass and E1 compatibility
+testbench_regfile_dual.v:70: $finish called at 52000 (1ps)
+
+=== Medicion benchmark_e1_e2 (testbench_medicion_e2)
+PASS E1 cycles=32 retired=23 IPC=0.718750 CPI=1.391304
+PASS E2 cycles=23 retired=23 IPC=1.000000 CPI=1.000000
+speedup E1/E2=1.391304, stores=5/5, drain=8 cycles
+coverage wrong-path discarded E1=2 E2=1, stall signal observations E1=1 E2=1
+testbench_medicion_e2.v:134: $finish called at 406000 (1ps)
+
+########## Comparacion A vs B contra el modelo de referencia
+=== Comparacion benchmark_propio (testbench_comparacion)
+
+==== Comparacion A vs B: benchmark_propio.mem ====
+  Config               Retiradas  Ciclos      IPC     CPI
+  A single-issue            1268    1818    0.697   1.434
+  B dual-issue              1268    1440    0.881   1.136
+  Speedup A->B = 1.262
+  A: stalls load-use=117  saltos tomados=215
+  B: ciclos con 2 emitidas=584  con 1=300  stalls=125  saltos tomados=215  uso doble emision=66.1%
+  B desglose: sale 1 por -> RAW en el par=128  MEM+MEM=143  CTRL+CTRL=13  load-use slot1=16  sin par=0
+  B desglose: sale 0 por -> redireccion de salto=215  decode vacio tras salto=216  load-use=125
+  B: instrucciones de la via 1 anuladas por salto en la via 0=197
+RESULT PASS A y B equivalentes (574 comprobaciones) speedup=1.262
+testbench_comparacion.v:142: $finish called at 18196000 (1ps)
+
+=== Comparacion e2_demo_issue (testbench_comparacion)
+
+==== Comparacion A vs B: e2_demo_issue.mem ====
+  Config               Retiradas  Ciclos      IPC     CPI
+  A single-issue              12      17    0.706   1.417
+  B dual-issue                12      13    0.923   1.083
+  Speedup A->B = 1.308
+  A: stalls load-use=0  saltos tomados=1
+  B: ciclos con 2 emitidas=7  con 1=2  stalls=1  saltos tomados=1  uso doble emision=77.8%
+  B desglose: sale 1 por -> RAW en el par=1  MEM+MEM=1  CTRL+CTRL=0  load-use slot1=0  sin par=0
+  B desglose: sale 0 por -> redireccion de salto=1  decode vacio tras salto=2  load-use=1
+  B: instrucciones de la via 1 anuladas por salto en la via 0=1
+RESULT PASS A y B equivalentes (574 comprobaciones) speedup=1.308
+testbench_comparacion.v:142: $finish called at 186000 (1ps)
+
+=== Comparacion e2_demo_branch (testbench_comparacion)
+
+==== Comparacion A vs B: e2_demo_branch.mem ====
+  Config               Retiradas  Ciclos      IPC     CPI
+  A single-issue               8      17    0.471   2.125
+  B dual-issue                 8      13    0.615   1.625
+  Speedup A->B = 1.308
+  A: stalls load-use=0  saltos tomados=3
+  B: ciclos con 2 emitidas=6  con 1=0  stalls=0  saltos tomados=3  uso doble emision=100.0%
+  B desglose: sale 1 por -> RAW en el par=0  MEM+MEM=0  CTRL+CTRL=0  load-use slot1=0  sin par=0
+  B desglose: sale 0 por -> redireccion de salto=3  decode vacio tras salto=4  load-use=0
+  B: instrucciones de la via 1 anuladas por salto en la via 0=1
+RESULT PASS A y B equivalentes (574 comprobaciones) speedup=1.308
+testbench_comparacion.v:142: $finish called at 186000 (1ps)
+
+########## Verificacion aleatoria (1000 programas, semillas 0..999)
+1000/1000 programas aleatorios PASS (A == B == modelo de referencia)

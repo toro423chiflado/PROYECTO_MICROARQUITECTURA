@@ -70,9 +70,57 @@ Para otros bancos se debe crear o abrir una configuración de ondas compatible.
 Una advertencia de rutas pertenecientes a otro top es un problema de la vista
 de ondas; el PASS o fallo funcional se consulta en la consola.
 
-El proyecto se conserva con `test_frontend_pipeline` como último top de simulación.
-El banco general `testbench` mantiene por defecto el ejemplo RVC `test_e2p2.mem`;
-para las pruebas E1 anteriores deben seleccionarse los bancos indicados.
+El proyecto abre con `testbench_e2` (E2) como top de simulación; para las pruebas
+de E1 se selecciona el banco correspondiente con **Set as Top**. El banco general
+`testbench` mantiene por defecto el ejemplo RVC `test_e2p2.mem`.
+
+# Proyecto 2 - Entrega 2 (dual-issue)
+
+## Ejecución en Vivado
+
+`PROYECTO2/PROYECTO2.xpr` abre con `testbench_e2` como Simulation Top, así que
+basta con Run Simulation > Run Behavioral Simulation. Para los demás bancos se
+usa **Set as Top** en Simulation Sources y, si la tabla lo indica, los parámetros
+en Settings > Simulation > Compilation > Generics/Parameters. El resultado
+(PASS o FAIL) se lee en la consola de Tcl.
+
+| Prueba | Simulation Top | Parámetros externos | Resultado esperado | Vivado 2025.2 |
+| --- | --- | --- | --- | --- |
+| Emisión y retiro | `testbench_e2` | Ninguno | 23 retiros en orden, `$finish` a 236 ns | Ejecutado: PASS |
+| Saltos en ambas vías | `testbench_e2_control` | Ninguno | 7 escenarios, `$finish` a 920 ns | Ejecutado: PASS |
+| Escenarios dirigidos | `testbench_e2_directed` | Ninguno | 21 escenarios, `$finish` a 3020 ns | Ejecutado: PASS |
+| Medición corta A vs B | `testbench_medicion_e2` | Ninguno | E1 32 ciclos, E2 23 ciclos, 23 retiros | Ejecutado: PASS |
+| Desplazamientos | `testbench_e2_shift` | Ninguno | 14 resultados con forwarding | Solo Icarus |
+| Banco 4R/2W | `testbench_regfile_dual` | Ninguno | Dos escrituras, prioridad, bypass y x0 | Solo Icarus |
+| Comparación A vs B | `testbench_comparacion` | Ninguno (usa `benchmark_propio`) | `RESULT PASS`, speedup 1.262 | Solo Icarus |
+| Comparación con demo | `testbench_comparacion` | `PROGRAM`, `DATA`, `EXP_REGS`, `EXP_MEM` de `e2_demo_issue` o `e2_demo_branch` | `RESULT PASS`, speedup 1.308 | Solo Icarus |
+| Ondas de E1 | `testbench_ondas_e1` | `PROGRAM` (por defecto `test2_forwarding.mem`) | Ondas del informe, sin PASS/FAIL | Solo Icarus |
+| Ondas de E2 | `testbench_ondas_e2` | `PROGRAM` (por defecto `e2_demo_issue.mem`) | Ondas del informe, sin PASS/FAIL | Solo Icarus |
+
+Los bancos marcados "Solo Icarus" están registrados en el proyecto con sus
+archivos de datos, pero no se corrieron en Vivado. Si al usar
+`testbench_comparacion` Vivado no copia los archivos `.exp_regs` y `.exp_mem` a
+la carpeta de simulación, el banco termina en `RESULT FAIL` con errores
+`x(A vs esperado)`. En ese caso se pueden pasar las rutas relativas a la raíz,
+por ejemplo `EXP_REGS="../../../../../benchmark_propio.exp_regs"` (la carpeta de
+simulación es `PROYECTO2/PROYECTO2.sim/sim_1/behav/xsim`), o dejar `EXP_REGS` y
+`EXP_MEM` en `""` para comparar solo A contra B.
+
+La verificación aleatoria (`tools/prueba_aleatoria.py`) usa Icarus Verilog y no
+tiene equivalente en Vivado.
+
+## Ejecución con Icarus Verilog
+
+Desde la raíz del repositorio:
+
+```sh
+sh tools/correr_pruebas.sh        # todas las pruebas de E1 y E2 + 1000 programas aleatorios
+```
+
+La salida completa queda en `resultados/salidas.txt`, con el commit, la fecha y
+la versión de Icarus. La copia incluida en el repositorio corresponde al código
+del commit 9277b79 y tiene 0 fallas. Los comandos de cada banco por separado
+están en `DOCUMENTACION_E2.md` y `MEDICION_E2.md`.
 
 
 ## Archivos generados
