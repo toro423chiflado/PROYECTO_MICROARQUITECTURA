@@ -1,0 +1,10 @@
+{
+  "instructions": 8,
+  "taken_control": 2,
+  "loads": 0,
+  "stores": 0,
+  "branches": 3,
+  "halt_pc": 44,
+  "program": "e2_demo_branch",
+  "static_instructions": 12
+}

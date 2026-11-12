@@ -55,6 +55,10 @@ module testbench_comparacion;
     integer a_cycles = 0, a_retired = 0, a_stalls = 0, a_taken = 0;
     integer b_cycles = 0, b_retired = 0, b_stalls = 0, b_taken = 0;
     integer b_issue2 = 0, b_issue1only = 0;
+    // Desglose de B: por que no salieron 2 instrucciones en un ciclo
+    integer s1_nopair = 0, s1_raw = 0, s1_mem = 0, s1_ctrl = 0, s1_lu = 0;   // salio 1
+    integer s0_redirect = 0, s0_empty = 0, s0_lu = 0;                         // salio 0
+    integer b_killed = 0;   // instrucciones de la via 1 anuladas por un salto de la via 0
     reg a_done = 0, b_done = 0;
     real ipc_a, ipc_b;
 
@@ -79,6 +83,28 @@ module testbench_comparacion;
         #19 reset = 0;   // se suelta el reset en un flanco de bajada (t = 20 ns)
     end
 
+    // --------------------------------------------------------------- desglose B
+    // Mismas reglas que la Issue Unit de e2_pipeline (solo para clasificar).
+    function writes_f(input [31:0] i);
+        writes_f = (i[6:0]==7'h33 || i[6:0]==7'h13 || i[6:0]==7'h03 || i[6:0]==7'h37 ||
+                    i[6:0]==7'h17 || i[6:0]==7'h6f || i[6:0]==7'h67);
+    endfunction
+    function uses1_f(input [31:0] i);
+        uses1_f = (i[6:0]==7'h33 || i[6:0]==7'h13 || i[6:0]==7'h03 || i[6:0]==7'h23 ||
+                   i[6:0]==7'h63 || i[6:0]==7'h67);
+    endfunction
+    function uses2_f(input [31:0] i);
+        uses2_f = (i[6:0]==7'h33 || i[6:0]==7'h23 || i[6:0]==7'h63);
+    endfunction
+    function raw_f(input [31:0] c, input [31:0] p);
+        raw_f = writes_f(p) && p[11:7]!=0 &&
+                ((uses1_f(c) && c[19:15]==p[11:7]) || (uses2_f(c) && c[24:20]==p[11:7]));
+    endfunction
+    function mem_f(input [31:0] i);  mem_f  = (i[6:0]==7'h03 || i[6:0]==7'h23); endfunction
+    function ctrl_f(input [31:0] i); ctrl_f = (i[6:0]==7'h63 || i[6:0]==7'h6f || i[6:0]==7'h67); endfunction
+
+    wire [31:0] bd0 = b.core.di[0], bd1 = b.core.di[1];
+
     // --------------------------------------------------------------- contadores
     // En cada flanco se leen las senales del ciclo que termina.
     always @(posedge clk) if (!reset) begin
@@ -96,6 +122,19 @@ module testbench_comparacion;
             b_issue1only = b_issue1only + (b_issue0 && !b_issue1);  // sale 1
             b_stalls     = b_stalls + (b.core.dv[0] && !b_issue0 && !b_redirect);
             b_taken      = b_taken  + b_redirect;
+            b_killed     = b_killed + (b.core.ev[1] && b.core.control_lane0 && b.core.ctaken);
+            if (b_issue0 && !b_issue1) begin                    // salio solo 1: causa
+                if      (!b.core.dv[1])            s1_nopair = s1_nopair + 1;
+                else if (raw_f(bd1, bd0))          s1_raw    = s1_raw + 1;
+                else if (mem_f(bd0) && mem_f(bd1)) s1_mem    = s1_mem + 1;
+                else if (ctrl_f(bd0) && ctrl_f(bd1)) s1_ctrl = s1_ctrl + 1;
+                else                               s1_lu     = s1_lu + 1;   // load-use del slot 1
+            end
+            if (!b_issue0) begin                                // no salio ninguna: causa
+                if      (b_redirect)               s0_redirect = s0_redirect + 1;
+                else if (!b.core.dv[0])            s0_empty    = s0_empty + 1;
+                else                               s0_lu       = s0_lu + 1;
+            end
             if (b_halt) b_done = 1;
         end
         if (a_done && b_done) begin
@@ -137,6 +176,12 @@ module testbench_comparacion;
             $display("  B: ciclos con 2 emitidas=%0d  con 1=%0d  stalls=%0d  saltos tomados=%0d  uso doble emision=%0.1f%%",
                      b_issue2, b_issue1only, b_stalls, b_taken,
                      100.0 * b_issue2 / ((b_issue2 + b_issue1only) > 0 ? (b_issue2 + b_issue1only) : 1));
+
+            $display("  B desglose: sale 1 por -> RAW en el par=%0d  MEM+MEM=%0d  CTRL+CTRL=%0d  load-use slot1=%0d  sin par=%0d",
+                     s1_raw, s1_mem, s1_ctrl, s1_lu, s1_nopair);
+            $display("  B desglose: sale 0 por -> redireccion de salto=%0d  decode vacio tras salto=%0d  load-use=%0d",
+                     s0_redirect, s0_empty, s0_lu);
+            $display("  B: instrucciones de la via 1 anuladas por salto en la via 0=%0d", b_killed);
 
             // 1. Equivalencia funcional A == B
             if (a_retired != b_retired) begin
