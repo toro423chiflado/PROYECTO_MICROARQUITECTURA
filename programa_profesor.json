@@ -1,0 +1,10 @@
+{
+  "instructions": 312,
+  "taken_control": 67,
+  "loads": 12,
+  "stores": 14,
+  "branches": 77,
+  "halt_pc": 356,
+  "program": "programa_profesor",
+  "static_instructions": 90
+}

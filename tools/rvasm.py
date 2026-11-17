@@ -23,7 +23,7 @@ Instrucciones soportadas (mismo subconjunto que el procesador):
     I: addi slti sltiu xori ori andi slli srli srai  lw  jalr
     S: sw     B: beq bne blt bge bltu bgeu     U: lui auipc     J: jal
     Pseudo: nop li mv j jr ret call la beqz bnez bgt ble halt
-Directivas: .text .data .word .space
+Directivas: .text .data .word .space (.globl/.global se ignoran)
 """
 import argparse
 import json
@@ -168,6 +168,8 @@ def parse(path):
                 continue
             if mn == ".data":
                 section = "data"
+                continue
+            if mn in (".globl", ".global"):   # simbolos globales: no afectan a un solo programa
                 continue
             if section == "data":
                 if mn == ".word":
