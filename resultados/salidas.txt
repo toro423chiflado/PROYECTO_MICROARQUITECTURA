@@ -1,5 +1,5 @@
-Commit: a51b92e
-Fecha:  2026-11-17 00:35 UTC
+Commit: de75e1b
+Fecha:  2026-11-17 01:00 UTC
 Icarus: Icarus Verilog version 12.0 (stable) ()
 Python: Python 3.13.18
 
@@ -181,6 +181,44 @@ testbench_comparacion.v:142: $finish called at 186000 (1ps)
 === Predictor dirigido (testbench_e3_predictor)
 PASS E3 predictor: 24 retiradas en 27 ciclos; branches=6 fallos=3, jal sin fallo, jalr corregido en EX, contador del bne = 10
 testbench_e3_predictor.v:76: $finish called at 286000 (1ps)
+
+=== Programa del profesor: etapas A-D en A, B y C (testbench_profe)
+  B etapa A: PASS (ciclo 12, t = 135000)
+  C etapa A: PASS (ciclo 12, t = 135000)
+  A etapa A: PASS (ciclo 17, t = 186000)
+  B etapa B: PASS (ciclo 25, t = 265000)
+  C etapa B: PASS (ciclo 25, t = 265000)
+  A etapa B: PASS (ciclo 31, t = 326000)
+  C etapa C: PASS (ciclo 216, t = 2175000)
+  C etapa D: PASS (ciclo 282, t = 2835000)
+  B etapa C: PASS (ciclo 312, t = 3135000)
+  A etapa C: PASS (ciclo 361, t = 3626000)
+  B etapa D: PASS (ciclo 387, t = 3885000)
+  A etapa D: PASS (ciclo 458, t = 4596000)
+
+  Indicador                 Pipeline (A)  Dual-Issue (B)  Optimizado (C)
+  Ciclos totales                     460             387             282
+  Instrucciones retiradas            312             312             312
+  CPI                              1.474           1.240           0.904
+  IPC                              0.678           0.806           1.106
+  Speedup vs. pipeline             1.000           1.189           1.631
+  B: ciclos con 2 emitidas=141 redirecciones=68
+  C: ciclos con 2 emitidas=121 redirecciones=28 branches=77 fallos=28 precision=63.6%
+RESULT PASS programa del profesor: etapas A-D correctas en A, B y C
+testbench_profe.v:313: $finish called at 4617000 (1ps)
+
+=== Comparacion A vs B vs C programa_profesor (testbench_comparacion_abc)
+
+==== Comparacion A vs B vs C: programa_profesor.mem ====
+  Config               Retiradas  Ciclos      IPC     CPI  Speedup/A  Speedup/B
+  A single-issue             312     460    0.678   1.474    1.000
+  B dual-issue               312     387    0.806   1.240    1.189      1.000
+  C dual + predictor         312     282    1.106   0.904    1.631      1.372
+  B: ciclos con 2 emitidas=141 con 1=99 redirecciones=68
+  C: ciclos con 2 emitidas=121 con 1=94 redirecciones=28
+  C predictor: branches=77 fallos=28 precision=63.6%  jal=15 (siempre aciertan)  jalr=0 (siempre fallan)
+RESULT PASS A, B y C equivalentes (861 comprobaciones) speedup C/A=1.631 C/B=1.372
+testbench_comparacion_abc.v:111: $finish called at 4616000 (1ps)
 
 === Comparacion A vs B vs C benchmark_propio (testbench_comparacion_abc)
 
