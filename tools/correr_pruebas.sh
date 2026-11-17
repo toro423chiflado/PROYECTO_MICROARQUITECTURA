@@ -24,7 +24,8 @@ corre() {   # corre <titulo> <top> [args de iverilog...]
 }
 
 {
-echo "Commit: $(git rev-parse --short HEAD 2>/dev/null || echo desconocido)"
+CAMBIOS=$(git status --porcelain -- . ':!resultados' 2>/dev/null | head -1)
+echo "Commit: $(git rev-parse --short HEAD 2>/dev/null || echo desconocido)${CAMBIOS:+ (con cambios sin commit)}"
 echo "Fecha:  $(date -u '+%Y-%m-%d %H:%M UTC')"
 echo "Icarus: $(iverilog -V 2>&1 | head -1)"
 echo "Python: $(python3 --version 2>&1)"
