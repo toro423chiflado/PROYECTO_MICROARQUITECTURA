@@ -64,7 +64,8 @@ python3 tools/prueba_aleatoria.py "$N" 0 2>&1
 echo
 echo "########## E3 (configuracion C: prediccion de saltos de 2 bits)"
 corre "Predictor dirigido" testbench_e3_predictor testbench_e3_predictor.v e3_top.v e3_pipeline.v imem.v dmem.v regfile.v
-for p in benchmark_propio e2_demo_issue e2_demo_branch e3_demo_pred; do
+corre "Programa del profesor: etapas A-D en A, B y C" testbench_profe *.v
+for p in programa_profesor benchmark_propio e2_demo_issue e2_demo_branch e3_demo_pred; do
     corre "Comparacion A vs B vs C $p" testbench_comparacion_abc \
         -P "testbench_comparacion_abc.PROGRAM=\"$p.mem\"" -P "testbench_comparacion_abc.DATA=\"$p.data.mem\"" \
         -P "testbench_comparacion_abc.EXP_REGS=\"$p.exp_regs\"" -P "testbench_comparacion_abc.EXP_MEM=\"$p.exp_mem\"" *.v
