@@ -1,5 +1,5 @@
 #!/bin/sh
-# correr_pruebas.sh - Ejecuta todas las pruebas de E1 y E2 con Icarus Verilog y
+# correr_pruebas.sh - Ejecuta todas las pruebas de E1, E2 y E3 con Icarus Verilog y
 # guarda la salida completa en resultados/salidas.txt, con el commit y las versiones.
 #
 #     sh tools/correr_pruebas.sh            # incluye 1000 programas aleatorios
@@ -59,6 +59,19 @@ done
 
 echo "########## Verificacion aleatoria ($N programas, semillas 0..$((N-1)))"
 python3 tools/prueba_aleatoria.py "$N" 0 2>&1
+
+echo
+echo "########## E3 (configuracion C: prediccion de saltos de 2 bits)"
+corre "Predictor dirigido" testbench_e3_predictor testbench_e3_predictor.v e3_top.v e3_pipeline.v imem.v dmem.v regfile.v
+for p in benchmark_propio e2_demo_issue e2_demo_branch e3_demo_pred; do
+    corre "Comparacion A vs B vs C $p" testbench_comparacion_abc \
+        -P "testbench_comparacion_abc.PROGRAM=\"$p.mem\"" -P "testbench_comparacion_abc.DATA=\"$p.data.mem\"" \
+        -P "testbench_comparacion_abc.EXP_REGS=\"$p.exp_regs\"" -P "testbench_comparacion_abc.EXP_MEM=\"$p.exp_mem\"" *.v
+done
+echo "########## Verificacion aleatoria A, B y C ($N programas)"
+python3 tools/prueba_aleatoria.py "$N" 0 --abc 2>&1
+echo "########## Verificacion aleatoria A, B y C con tabla de 2 contadores ($N programas)"
+python3 tools/prueba_aleatoria.py "$N" 0 --abc --bht 1 2>&1
 } > "$OUT"
 
 rm -rf "$TMP"

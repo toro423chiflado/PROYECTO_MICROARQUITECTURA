@@ -1,5 +1,5 @@
-Commit: 9277b79
-Fecha:  2026-11-12 23:32 UTC
+Commit: 92321ae
+Fecha:  2026-11-17 00:29 UTC
 Icarus: Icarus Verilog version 12.0 (stable) ()
 Python: Python 3.13.18
 
@@ -176,3 +176,65 @@ testbench_comparacion.v:142: $finish called at 186000 (1ps)
 
 ########## Verificacion aleatoria (1000 programas, semillas 0..999)
 1000/1000 programas aleatorios PASS (A == B == modelo de referencia)
+
+########## E3 (configuracion C: prediccion de saltos de 2 bits)
+=== Predictor dirigido (testbench_e3_predictor)
+PASS E3 predictor: 24 retiradas en 27 ciclos; branches=6 fallos=3, jal sin fallo, jalr corregido en EX, contador del bne = 10
+testbench_e3_predictor.v:76: $finish called at 286000 (1ps)
+
+=== Comparacion A vs B vs C benchmark_propio (testbench_comparacion_abc)
+
+==== Comparacion A vs B vs C: benchmark_propio.mem ====
+  Config               Retiradas  Ciclos      IPC     CPI  Speedup/A  Speedup/B
+  A single-issue            1268    1818    0.697   1.434    1.000
+  B dual-issue              1268    1440    0.881   1.136    1.262      1.000
+  C dual + predictor        1268    1142    1.110   0.901    1.592      1.261
+  B: ciclos con 2 emitidas=584 con 1=300 redirecciones=215
+  C: ciclos con 2 emitidas=446 con 1=428 redirecciones=71
+  C predictor: branches=315 fallos=71 precision=77.5%  jal=3 (siempre aciertan)  jalr=0 (siempre fallan)
+RESULT PASS A, B y C equivalentes (861 comprobaciones) speedup C/A=1.592 C/B=1.261
+testbench_comparacion_abc.v:111: $finish called at 18196000 (1ps)
+
+=== Comparacion A vs B vs C e2_demo_issue (testbench_comparacion_abc)
+
+==== Comparacion A vs B vs C: e2_demo_issue.mem ====
+  Config               Retiradas  Ciclos      IPC     CPI  Speedup/A  Speedup/B
+  A single-issue              12      17    0.706   1.417    1.000
+  B dual-issue                12      13    0.923   1.083    1.308      1.000
+  C dual + predictor          12      13    0.923   1.083    1.308      1.000
+  B: ciclos con 2 emitidas=7 con 1=2 redirecciones=1
+  C: ciclos con 2 emitidas=5 con 1=6 redirecciones=0
+  C predictor: branches=0 fallos=0 precision=0.0%  jal=3 (siempre aciertan)  jalr=0 (siempre fallan)
+RESULT PASS A, B y C equivalentes (861 comprobaciones) speedup C/A=1.308 C/B=1.000
+testbench_comparacion_abc.v:111: $finish called at 186000 (1ps)
+
+=== Comparacion A vs B vs C e2_demo_branch (testbench_comparacion_abc)
+
+==== Comparacion A vs B vs C: e2_demo_branch.mem ====
+  Config               Retiradas  Ciclos      IPC     CPI  Speedup/A  Speedup/B
+  A single-issue               8      17    0.471   2.125    1.000
+  B dual-issue                 8      13    0.615   1.625    1.308      1.000
+  C dual + predictor           8      13    0.615   1.625    1.308      1.000
+  B: ciclos con 2 emitidas=6 con 1=0 redirecciones=3
+  C: ciclos con 2 emitidas=5 con 1=3 redirecciones=2
+  C predictor: branches=3 fallos=2 precision=33.3%  jal=3 (siempre aciertan)  jalr=0 (siempre fallan)
+RESULT PASS A, B y C equivalentes (861 comprobaciones) speedup C/A=1.308 C/B=1.000
+testbench_comparacion_abc.v:111: $finish called at 186000 (1ps)
+
+=== Comparacion A vs B vs C e3_demo_pred (testbench_comparacion_abc)
+
+==== Comparacion A vs B vs C: e3_demo_pred.mem ====
+  Config               Retiradas  Ciclos      IPC     CPI  Speedup/A  Speedup/B
+  A single-issue              24      43    0.558   1.792    1.000
+  B dual-issue                24      33    0.727   1.375    1.303      1.000
+  C dual + predictor          24      27    0.889   1.125    1.593      1.222
+  B: ciclos con 2 emitidas=12 con 1=4 redirecciones=8
+  C: ciclos con 2 emitidas=10 con 1=8 redirecciones=4
+  C predictor: branches=6 fallos=3 precision=50.0%  jal=4 (siempre aciertan)  jalr=1 (siempre fallan)
+RESULT PASS A, B y C equivalentes (861 comprobaciones) speedup C/A=1.593 C/B=1.222
+testbench_comparacion_abc.v:111: $finish called at 446000 (1ps)
+
+########## Verificacion aleatoria A, B y C (1000 programas)
+1000/1000 programas aleatorios PASS (A == B == C == modelo de referencia)
+########## Verificacion aleatoria A, B y C con tabla de 2 contadores (1000 programas)
+1000/1000 programas aleatorios PASS (A == B == C == modelo de referencia, tabla de C con 2 contadores)

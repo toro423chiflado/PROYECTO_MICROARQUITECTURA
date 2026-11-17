@@ -63,10 +63,19 @@ def programa(seed, n=48):
             + "\n".join(body) + "\nhalt\n")
 
 def main():
-    n = int(sys.argv[1]) if len(sys.argv) > 1 else 100
-    s0 = int(sys.argv[2]) if len(sys.argv) > 2 else 0
+    # Opciones: --abc compara tambien C (testbench_comparacion_abc.v);
+    #           --bht N usa una tabla de 2^N contadores en C (N pequeno = mas fallos).
+    args = [x for x in sys.argv[1:] if not x.startswith("--")]
+    abc = "--abc" in sys.argv
+    bht = None
+    if "--bht" in sys.argv:
+        bht = sys.argv[sys.argv.index("--bht") + 1]
+        args.remove(bht)
+    n = int(args[0]) if len(args) > 0 else 100
+    s0 = int(args[1]) if len(args) > 1 else 0
     rtl = [f for f in glob.glob(os.path.join(ROOT, "*.v")) if not os.path.basename(f).startswith(("testbench", "test_"))]
-    tb = os.path.join(ROOT, "testbench_comparacion.v")
+    top = "testbench_comparacion_abc" if abc else "testbench_comparacion"
+    tb = os.path.join(ROOT, top + ".v")
     fallas = 0
     with tempfile.TemporaryDirectory() as d:
         for seed in range(s0, s0 + n):
@@ -76,16 +85,19 @@ def main():
                            check=True, capture_output=True)
             b = os.path.join(d, f"r{seed}")
             exe = b + ".vvp"
-            p = lambda k, v: ["-P", f'testbench_comparacion.{k}="{v}"']
-            subprocess.run(["iverilog", "-g2012", "-o", exe, "-s", "testbench_comparacion",
+            p = lambda k, v: ["-P", f'{top}.{k}="{v}"']
+            extra = ["-P", f"{top}.BHT_BITS={bht}"] if (abc and bht) else []
+            subprocess.run(["iverilog", "-g2012", "-o", exe, "-s", top,
                             *p("PROGRAM", b + ".mem"), *p("DATA", b + ".data.mem"),
                             *p("EXP_REGS", b + ".exp_regs"), *p("EXP_MEM", b + ".exp_mem"),
-                            *rtl, tb], check=True, capture_output=True)
+                            *extra, *rtl, tb], check=True, capture_output=True)
             out = subprocess.run(["vvp", "-n", exe], capture_output=True, text=True).stdout
             if "RESULT PASS" not in out:
                 fallas += 1
                 print(f"FALLA semilla {seed}:\n{out}")
-    print(f"{n - fallas}/{n} programas aleatorios PASS (A == B == modelo de referencia)")
+    cfg = "A == B == C == modelo de referencia" if abc else "A == B == modelo de referencia"
+    if abc and bht: cfg += f", tabla de C con {2 ** int(bht)} contadores"
+    print(f"{n - fallas}/{n} programas aleatorios PASS ({cfg})")
     sys.exit(1 if fallas else 0)
 
 if __name__ == "__main__":
